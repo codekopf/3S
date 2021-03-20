@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -34,7 +35,7 @@ public class Engine {
 
         while(!this.unprocessedLinks.isEmpty()) {
             val currentlyCrawledPage = this.unprocessedLinks.iterator().next();
-            log.info("Processing " + currentlyCrawledPage + " page.");
+            log.info("Processing " + currentlyCrawledPage);
             try {
                 val document = Jsoup.connect(currentlyCrawledPage).get();
                 val htmlAnchors = document.select("a[href]");
@@ -47,17 +48,25 @@ public class Engine {
                 });
 
                 pageLinks.forEach(this::processLink);
+
+                this.processedLinks.add(currentlyCrawledPage);
+                log.info(currentlyCrawledPage + " was processed.");
+            } catch (HttpStatusException e) {
+                this.problematicLinks.add(currentlyCrawledPage);
+                log.error(e.getStatusCode() + " status for " + currentlyCrawledPage);
+                printProcessingCache();
             } catch (IOException e) {
                 this.problematicLinks.add(currentlyCrawledPage);
-                log.error("Issue with crawling " + currentlyCrawledPage + " page.", e);
+                log.error("Issue with crawling " + currentlyCrawledPage, e);
                 printProcessingCache();
             }
 
             this.unprocessedLinks.remove(currentlyCrawledPage);
-            this.processedLinks.add(currentlyCrawledPage);
         }
 
-        log.info("List of pages for" + this.domain + ":");
+        printProcessingCache();
+
+        log.info("List of pages for " + this.domain + ":");
         this.processedLinks.forEach(log::info);
     }
 
@@ -79,7 +88,8 @@ public class Engine {
 
             if(linkStartsWithSlash || linkStartsWithDomain || linkContainsDomainName) {
                 if(linkStartsWithSlash) {
-                    this.unprocessedLinks.add(this.websiteURL + link);
+                    log.info("Link starting with / : " + link);
+                    // this.unprocessedLinks.add(this.websiteURL + link); TODO: Figure out what to do with links which start with slash
                 } else {
                     this.unprocessedLinks.add(link);
                 }
