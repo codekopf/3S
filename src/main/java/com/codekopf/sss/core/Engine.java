@@ -97,7 +97,7 @@ public class Engine {
         }
     }
 
-    private void printProcessingCache(){
+    private void printProcessingCache() {
         log.info("List of problematic pages:");
         this.problematicLinks.forEach(log::info);
 
