@@ -62,6 +62,16 @@ public class Engine {
             }
 
             this.unprocessedPages.remove(currentlyProcessedUnprocessedPage);
+
+            if (processedPages.size() % 30 == 0) {
+                printProcessingCache();
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         printProcessingCache();
