@@ -11,9 +11,10 @@ public final class ProcessedPage {
 
     final String parentURL;
     final String pageURL;
+    final PageProcessingStatus pageProcessingStatus;
 
-    public static ProcessedPage from(final UnprocessedPage unprocessedPage) {
-        return new ProcessedPage(unprocessedPage.getParentURL(), unprocessedPage.getPageURL());
+    public static ProcessedPage of(final UnprocessedPage unprocessedPage, final PageProcessingStatus pageProcessingStatus) {
+        return new ProcessedPage(unprocessedPage.getParentURL(), unprocessedPage.getPageURL(), pageProcessingStatus);
     }
 
     // Note:
@@ -25,16 +26,17 @@ public final class ProcessedPage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProcessedPage that = (ProcessedPage) o;
-        return pageURL.equals(that.pageURL);
+        return this.pageURL.equals(that.pageURL);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pageURL);
+        return Objects.hash(this.pageURL);
     }
 
     @Override
     public String toString() {
-        return "Processed page : pageURL = " + pageURL + ", parentURL = " + parentURL;
+        return "Processed page : pageProcessingStatus = " + this.pageProcessingStatus + ", pageURL = " + this.pageURL + ", parentURL = " + this.parentURL;
     }
+
 }
