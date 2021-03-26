@@ -46,7 +46,7 @@ public class Engine {
 
             try {
                 val document = Jsoup.connect(currentlyProcessedUnprocessedPage.getPageURL()).get();
-                processPageLinks(currentlyProcessedUnprocessedPage.getParentURL(), document);
+                processPageLinks(currentlyProcessedUnprocessedPage.getPageURL(), document);
                 val processedPage = ProcessedPage.from(currentlyProcessedUnprocessedPage); // TODO Add 404 , size, number of images, redirect
                 this.processedPages.add(processedPage);
                 log.info(currentlyProcessedUnprocessedPage + " was processed.");
