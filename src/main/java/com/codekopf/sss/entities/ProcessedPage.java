@@ -5,16 +5,23 @@ import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import static com.codekopf.sss.entities.PageProcessingStatus.OK;
+import static com.codekopf.sss.entities.PageProcessingStatus.PROBLEMATIC;
+
 @Getter
 @AllArgsConstructor
 public final class ProcessedPage {
 
-    final String parentURL;
     final String pageURL;
+    final String parentURL;
     final PageProcessingStatus pageProcessingStatus;
 
-    public static ProcessedPage of(final UnprocessedPage unprocessedPage, final PageProcessingStatus pageProcessingStatus) {
-        return new ProcessedPage(unprocessedPage.getParentURL(), unprocessedPage.getPageURL(), pageProcessingStatus);
+    public static ProcessedPage createOKPageFrom(final LinkDataStructure linkDataStructure2) {
+        return new ProcessedPage(linkDataStructure2.getPageURL(), linkDataStructure2.getParentURL(), OK);
+    }
+
+    public static ProcessedPage createProblematicPageFrom(final LinkDataStructure linkDataStructure2) {
+        return new ProcessedPage(linkDataStructure2.getPageURL(), linkDataStructure2.getParentURL(), PROBLEMATIC);
     }
 
     // Note:

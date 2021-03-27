@@ -13,9 +13,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import com.codekopf.sss.entities.PageProcessingStatus;
+import com.codekopf.sss.entities.LinkDataStructure;
 import com.codekopf.sss.entities.ProcessedPage;
-import com.codekopf.sss.entities.UnprocessedPage;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
@@ -25,7 +24,8 @@ import static com.codekopf.sss.entities.PageProcessingStatus.OK;
 @Service
 public class Engine {
 
-    private Set<UnprocessedPage> unprocessedPages = new HashSet<>();
+    private Set<LinkDataStructure> unprocessedLinks = new HashSet<>();
+    private Set<LinkDataStructure> processedLinks = new HashSet<>();
 
     private Set<ProcessedPage> externalPages = new HashSet<>(); // TODO: I shall track this too
     private Set<ProcessedPage> processedPages = new HashSet<>();
@@ -39,32 +39,35 @@ public class Engine {
     @EventListener(ApplicationReadyEvent.class)
     public void crawlSiteAfterStartup() {
 
-        val seed = new UnprocessedPage(this.websiteURL, this.websiteURL);
+        val seed = new LinkDataStructure(this.websiteURL, this.websiteURL);
 
-        this.unprocessedPages.add(seed);
+        this.unprocessedLinks.add(seed);
 
-        while(!this.unprocessedPages.isEmpty()) {
-            val currentlyProcessedUnprocessedPage = this.unprocessedPages.iterator().next();
-            log.info("Processing " + currentlyProcessedUnprocessedPage.getPageURL());
+        while(!this.unprocessedLinks.isEmpty()) {
+            val unprocessedLink = this.unprocessedLinks.iterator().next();
+            log.info("Processing " + unprocessedLink.getPageURL());
 
             try {
-                val document = Jsoup.connect(currentlyProcessedUnprocessedPage.getPageURL()).get();
-                processPageLinks(currentlyProcessedUnprocessedPage.getPageURL(), document);
-                val processedPage = ProcessedPage.of(currentlyProcessedUnprocessedPage, OK); // TODO Add 404 , size, number of images, redirect
-                this.processedPages.add(processedPage);
-                log.info(currentlyProcessedUnprocessedPage + " was processed.");
+                val document = Jsoup.connect(unprocessedLink.getPageURL()).get();
+
                 // TODO: external links
+                processPageLinks(unprocessedLink.getPageURL(), document);
+
+                val processedPage = ProcessedPage.createOKPageFrom(unprocessedLink); // TODO Add 404 , size, number of images, redirect
+                this.processedPages.add(processedPage);
+                log.info(unprocessedLink + " was processed.");
             } catch (HttpStatusException e) {
-                this.processedPages.add(ProcessedPage.of(currentlyProcessedUnprocessedPage, PageProcessingStatus.PROBLEMATIC)); // TODO: add info what was the problem - 3rd data structure - Problematic Page
-                log.error(e.getStatusCode() + " status for " + currentlyProcessedUnprocessedPage);
+                this.processedPages.add(ProcessedPage.createProblematicPageFrom(unprocessedLink)); // TODO: add info what was the problem - 3rd data structure - Problematic Page
+                log.error(e.getStatusCode() + " status for " + unprocessedLink);
                 printProcessingCache();
             } catch (IOException e) {
-                this.processedPages.add(ProcessedPage.of(currentlyProcessedUnprocessedPage, PageProcessingStatus.PROBLEMATIC)); // TODO: add info what was the problem - 3rd data structure - Problematic Page
-                log.error("Issue with crawling " + currentlyProcessedUnprocessedPage, e);
+                this.processedPages.add(ProcessedPage.createProblematicPageFrom(unprocessedLink)); // TODO: add info what was the problem - 3rd data structure - Problematic Page
+                log.error("Issue with crawling " + unprocessedLink, e);
                 printProcessingCache();
             }
 
-            this.unprocessedPages.remove(currentlyProcessedUnprocessedPage);
+            this.unprocessedLinks.remove(unprocessedLink);
+            this.processedLinks.add(unprocessedLink);
 
             if (processedPages.size() % 30 == 0) {
                 printProcessingCache();
@@ -102,11 +105,8 @@ public class Engine {
     // It should be doing only one thing. Decouple/Refactor
     private void processLink(final String parentURL, final String link) {
 
-        val dummyUnprocessedPage = new UnprocessedPage(parentURL, link);
-        val dummyProcessedPage = new ProcessedPage(parentURL, link, OK); // TODO: This revieled the flaw in design - there is a distinciton between link (processed and unproccessed) and the result (link, status, size, # of images, etc.)
-
-        val isNotInUnprocessedLinks = !this.unprocessedPages.contains(dummyUnprocessedPage);
-        val isNotInProcessedLinks = !this.processedPages.contains(dummyProcessedPage);
+        val isNotInUnprocessedLinks = !this.unprocessedLinks.contains(link);
+        val isNotInProcessedLinks = !this.processedLinks.contains(link);
 
         val isNotSpecialHTTPRequest = !link.contains("?");
 
@@ -124,7 +124,7 @@ public class Engine {
                     log.info("Link starting with / : " + link);
                     // this.unprocessedLinks.add(this.websiteURL + link); TODO: Figure out what to do with links which start with slash
                 } else {
-                    this.unprocessedPages.add(dummyUnprocessedPage);
+                    this.unprocessedLinks.add(new LinkDataStructure(parentURL, link));
                 }
             }
         }
@@ -133,7 +133,7 @@ public class Engine {
     private void printProcessingCache() {
 
         log.info("List of unprocessed pages:");
-        this.unprocessedPages.forEach(log::info);
+        this.unprocessedLinks.forEach(log::info);
 
         val normalPages = new ArrayList<ProcessedPage>();
         val problematicPages = new ArrayList<ProcessedPage>();

@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public final class UnprocessedPage {
+public final class LinkDataStructure {
 
     final String parentURL;
     final String pageURL;
@@ -20,7 +20,7 @@ public final class UnprocessedPage {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UnprocessedPage that = (UnprocessedPage) o;
+        LinkDataStructure that = (LinkDataStructure) o;
         return pageURL.equals(that.pageURL);
     }
 
@@ -31,6 +31,6 @@ public final class UnprocessedPage {
 
     @Override
     public String toString() {
-        return "Unprocessed page : pageURL = " + pageURL + ", parentURL = " + parentURL;
+        return "Unprocessed link structure : pageURL = " + pageURL + ", parentURL = " + parentURL;
     }
 }
