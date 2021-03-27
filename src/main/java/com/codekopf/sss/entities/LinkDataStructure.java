@@ -21,16 +21,16 @@ public final class LinkDataStructure {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LinkDataStructure that = (LinkDataStructure) o;
-        return pageURL.equals(that.pageURL);
+        return this.pageURL.equals(that.pageURL);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pageURL);
+        return Objects.hash(this.pageURL);
     }
 
     @Override
     public String toString() {
-        return "Unprocessed link structure : pageURL = " + pageURL + ", parentURL = " + parentURL;
+        return "Unprocessed link structure : pageURL = " + this.pageURL + ", parentURL = " + this.parentURL;
     }
 }

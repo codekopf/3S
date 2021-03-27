@@ -71,7 +71,7 @@ public class Engine {
             this.unprocessedLinks.remove(unprocessedLink);
             this.processedLinks.add(unprocessedLink);
 
-            if (processedPages.size() % 30 == 0) {
+            if (this.processedPages.size() % 30 == 0) {
                 printProcessingCache();
             }
 
