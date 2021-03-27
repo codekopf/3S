@@ -105,26 +105,32 @@ public class Engine {
     // It should be doing only one thing. Decouple/Refactor
     private void processLink(final String parentURL, final String link) {
 
-        val isNotInUnprocessedLinks = !this.unprocessedLinks.contains(link);
-        val isNotInProcessedLinks = !this.processedLinks.contains(link);
+        val tempLinkDataStructure = new LinkDataStructure(parentURL, link);
+        val isInUnprocessedLinks = this.unprocessedLinks.contains(tempLinkDataStructure);
+        val isInProcessedLinks = this.processedLinks.contains(tempLinkDataStructure);
 
-        val isNotSpecialHTTPRequest = !link.contains("?");
+        if (isInProcessedLinks || isInUnprocessedLinks) { // TODO Rework
+            // DO NOTHING
+        } else {
 
-        val doesNotContainSignHash = !link.contains("#"); // TODO: If remove suffix after # and prefix is not null, check the link if page is not in processed/unprocessed
-        val doesNotContainCharacterCombination = !link.contains("gp/"); // This is optional
+            val isNotSpecialHTTPRequest = !link.contains("?");
 
-        if(isNotInUnprocessedLinks && isNotInProcessedLinks && isNotSpecialHTTPRequest && doesNotContainSignHash && doesNotContainCharacterCombination) {
+            val doesNotContainSignHash = !link.contains("#"); // TODO: If remove suffix after # and prefix is not null, check the link if page is not in processed/unprocessed
+            val doesNotContainCharacterCombination = !link.contains("gp/"); // This is optional
 
-            val linkStartsWithSlash = link.startsWith("/");
-            val linkStartsWithDomain = link.startsWith(this.domain);
-            val linkContainsDomainName = link.contains(this.domain);
+            if(isNotSpecialHTTPRequest && doesNotContainSignHash && doesNotContainCharacterCombination) {
 
-            if(linkStartsWithSlash || linkStartsWithDomain || linkContainsDomainName) {
-                if(linkStartsWithSlash) {
-                    log.info("Link starting with / : " + link);
-                    // this.unprocessedLinks.add(this.websiteURL + link); TODO: Figure out what to do with links which start with slash
-                } else {
-                    this.unprocessedLinks.add(new LinkDataStructure(parentURL, link));
+                val linkStartsWithSlash = link.startsWith("/");
+                val linkStartsWithDomain = link.startsWith(this.domain);
+                val linkContainsDomainName = link.contains(this.domain);
+
+                if(linkStartsWithSlash || linkStartsWithDomain || linkContainsDomainName) {
+                    if(linkStartsWithSlash) {
+                        log.info("Link starting with / : " + link);
+                        // this.unprocessedLinks.add(this.websiteURL + link); TODO: Figure out what to do with links which start with slash
+                    } else {
+                        this.unprocessedLinks.add(tempLinkDataStructure);
+                    }
                 }
             }
         }
