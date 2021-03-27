@@ -15,13 +15,14 @@ public final class ProcessedPage {
     final String pageURL;
     final String parentURL;
     final PageProcessingStatus pageProcessingStatus;
+    final int wordCount;
 
-    public static ProcessedPage createOKPageFrom(final LinkDataStructure linkDataStructure) {
-        return new ProcessedPage(linkDataStructure.getPageURL(), linkDataStructure.getParentURL(), OK);
+    public static ProcessedPage createOKPageFrom(final LinkDataStructure linkDataStructure, final int wordCount) {
+        return new ProcessedPage(linkDataStructure.getPageURL(), linkDataStructure.getParentURL(), OK, wordCount);
     }
 
     public static ProcessedPage createProblematicPageFrom(final LinkDataStructure linkDataStructure) {
-        return new ProcessedPage(linkDataStructure.getPageURL(), linkDataStructure.getParentURL(), PROBLEMATIC);
+        return new ProcessedPage(linkDataStructure.getPageURL(), linkDataStructure.getParentURL(), PROBLEMATIC, 0);
     }
 
     // Note:
@@ -43,7 +44,10 @@ public final class ProcessedPage {
 
     @Override
     public String toString() {
-        return "Processed page : pageProcessingStatus = " + this.pageProcessingStatus + ", pageURL = " + this.pageURL + ", parentURL = " + this.parentURL;
+        return "Processed page : pageProcessingStatus = " + this.pageProcessingStatus
+                + ", pageURL = " + this.pageURL
+                + ", parentURL = " + this.parentURL
+                + ", wordCount = " + this.wordCount;
     }
 
 }

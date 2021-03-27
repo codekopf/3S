@@ -53,7 +53,9 @@ public class Engine {
                 // TODO: external links
                 processPageLinks(unprocessedLink.getPageURL(), document);
 
-                val processedPage = ProcessedPage.createOKPageFrom(unprocessedLink); // TODO Add 404 , size, number of images, redirect
+                val wordCount = document.text().split("\\s+").length;
+
+                val processedPage = ProcessedPage.createOKPageFrom(unprocessedLink, wordCount); // TODO Add 404 , size, number of images, redirect
                 this.processedPages.add(processedPage);
                 log.info(unprocessedLink + " was processed.");
             } catch (HttpStatusException e) {
