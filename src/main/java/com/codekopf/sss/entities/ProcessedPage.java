@@ -16,12 +16,12 @@ public final class ProcessedPage {
     final String parentURL;
     final PageProcessingStatus pageProcessingStatus;
 
-    public static ProcessedPage createOKPageFrom(final LinkDataStructure linkDataStructure2) {
-        return new ProcessedPage(linkDataStructure2.getPageURL(), linkDataStructure2.getParentURL(), OK);
+    public static ProcessedPage createOKPageFrom(final LinkDataStructure linkDataStructure) {
+        return new ProcessedPage(linkDataStructure.getPageURL(), linkDataStructure.getParentURL(), OK);
     }
 
-    public static ProcessedPage createProblematicPageFrom(final LinkDataStructure linkDataStructure2) {
-        return new ProcessedPage(linkDataStructure2.getPageURL(), linkDataStructure2.getParentURL(), PROBLEMATIC);
+    public static ProcessedPage createProblematicPageFrom(final LinkDataStructure linkDataStructure) {
+        return new ProcessedPage(linkDataStructure.getPageURL(), linkDataStructure.getParentURL(), PROBLEMATIC);
     }
 
     // Note:
