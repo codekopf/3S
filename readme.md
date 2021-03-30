@@ -27,7 +27,7 @@
     * crawl to level 1,2, ... from given page.
     * take into account robot.txt or not during the crawling
 * Ability to stop and continue (2 files, list of unprocessed and processed links which can be taken in any time and process).
-* Order URLs links in a output file
+* Order URLs links in an output file
   * alphabetically, by length etc.
 * Possibility to set crawling page delay - protection against script being classified as bot and being blocked
   * normal - one second
@@ -37,7 +37,7 @@
 * Check scrapping failure for IllegalArgumentException
 * Do not follow redirect / Check on redirect
 * Use Reactive Java - event on a processed page between frontend-backend
-* Make Lombok use LOG for log anotation
+* Make Lombok use LOG for a log annotation
 * Add redirect check
 * Replace get() method for execute
 
@@ -50,8 +50,8 @@
 
 #### OTHERS ####
 * Create config map for special cases
-  * e.g. link.contains("#") - same URL but with internal anchor -> remove duplicats 
+  * e.g. link.contains("#") - same URL but with an internal anchor -> remove duplicates 
   * e.g. link.contains("gp/"))
-* How to handle link on image?
+* How to handle link on an image?
   * e.g. https://codepills.com/wp-content/uploads/2016/03/osx-xampp-wordpress-ftp-install-error-directory-settings.png
   * Another exception - org.jsoup.UnsupportedMimeTypeException: Unhandled content type. Must be text/*, application/xml, or application/*+xml
