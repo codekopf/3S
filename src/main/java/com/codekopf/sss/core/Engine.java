@@ -1,10 +1,13 @@
 package com.codekopf.sss.core;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -159,5 +162,25 @@ public class Engine {
 
         log.info("List of processed pages:");
         normalPages.forEach(log::info);
+
+        createCSVFile();
+    }
+
+
+
+    public void createCSVFile() {
+        String[] HEADERS = { "status", "page URL", "parent URL", "word count"};
+        try (final FileWriter fileWriter = new FileWriter(this.domain.replace(".", "_") + ".csv");
+             final CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(HEADERS))) {
+            this.processedPages.forEach((page) -> {
+                try {
+                    csvPrinter.printRecord(page.getPageProcessingStatus(), page.getPageURL(), page.getParentURL(), page.getWordCount());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (IOException e) {
+
+        }
     }
 }
