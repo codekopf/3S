@@ -29,6 +29,9 @@
 * Ability to stop and continue (2 files, list of unprocessed and processed links which can be taken in any time and process).
 * Order URLs links in a output file
   * alphabetically, by length etc.
+* Possibility to set crawling page delay - protection against script being classified as bot and being blocked
+  * normal - one second
+  * random - bell curve of 1 minute range 
 
 #### CODE ####
 * Check scrapping failure for IllegalArgumentException

@@ -27,6 +27,7 @@ import static com.codekopf.sss.entities.PageProcessingStatus.OK;
 @Service
 public class Engine {
 
+    // TODO Rework this to ProcessingLinkCache - new class - wrapper around these classes
     private Set<LinkDataStructure> unprocessedLinks = new HashSet<>();
     private Set<LinkDataStructure> processedLinks = new HashSet<>();
 
@@ -157,11 +158,15 @@ public class Engine {
             }
         }
 
+        // TODO: Show how much link is in each group
+
         log.info("List of problematic pages:");
         problematicPages.forEach(log::info);
 
         log.info("List of processed pages:");
         normalPages.forEach(log::info);
+
+        // TODO: Exit program on success
 
         createCSVFile();
     }
