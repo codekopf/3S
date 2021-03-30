@@ -185,7 +185,7 @@ public class Engine {
                 }
             });
         } catch (IOException e) {
-
+            log.error("Could not export link records to file!", e);
         }
     }
 }
