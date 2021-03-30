@@ -28,11 +28,11 @@ import static com.codekopf.sss.entities.PageProcessingStatus.OK;
 public class Engine {
 
     // TODO Rework this to ProcessingLinkCache - new class - wrapper around these classes
-    private Set<LinkDataStructure> unprocessedLinks = new HashSet<>();
-    private Set<LinkDataStructure> processedLinks = new HashSet<>();
+    private final Set<LinkDataStructure> unprocessedLinks = new HashSet<>();
+    private final Set<LinkDataStructure> processedLinks = new HashSet<>();
 
-    private Set<ProcessedPage> externalPages = new HashSet<>(); // TODO: I shall track this too
-    private Set<ProcessedPage> processedPages = new HashSet<>();
+    private final Set<ProcessedPage> externalPages = new HashSet<>(); // TODO: I shall track this too
+    private final Set<ProcessedPage> processedPages = new HashSet<>();
 
     @Value("${domain}")
     private String domain;
@@ -174,9 +174,9 @@ public class Engine {
 
 
     public void createCSVFile() {
-        String[] HEADERS = { "status", "page URL", "parent URL", "word count"};
+        final String[] headers = { "status", "page URL", "parent URL", "word count"};
         try (final FileWriter fileWriter = new FileWriter(this.domain.replace(".", "_") + ".csv");
-             final CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(HEADERS))) {
+             final CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(headers))) {
             this.processedPages.forEach((page) -> {
                 try {
                     csvPrinter.printRecord(page.getPageProcessingStatus(), page.getPageURL(), page.getParentURL(), page.getWordCount());
