@@ -1,6 +1,7 @@
 package com.codekopf.sss.entities;
 
-import java.util.Objects;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,15 +32,19 @@ public final class ProcessedPage {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
         ProcessedPage that = (ProcessedPage) o;
-        return this.pageURL.equals(that.pageURL);
+        return new EqualsBuilder().append(this.pageURL, that.pageURL).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.pageURL);
+        return new HashCodeBuilder(17, 37).append(this.pageURL).toHashCode();
     }
 
     @Override
