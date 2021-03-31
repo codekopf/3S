@@ -171,13 +171,11 @@ public class Engine {
         createCSVFile();
     }
 
-
-
     public void createCSVFile() {
         final String[] headers = { "status", "page URL", "parent URL", "word count"};
         try (final FileWriter fileWriter = new FileWriter(this.domain.replace(".", "_") + ".csv");
              final CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(headers))) {
-            this.processedPages.forEach((page) -> {
+            this.processedPages.forEach( page -> {
                 try {
                     csvPrinter.printRecord(page.getPageProcessingStatus(), page.getPageURL(), page.getParentURL(), page.getWordCount());
                 } catch (IOException e) {
