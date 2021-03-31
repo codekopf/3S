@@ -47,12 +47,14 @@ public final class ProcessedPage {
         return new HashCodeBuilder(17, 37).append(this.pageURL).toHashCode();
     }
 
+    // Custom toString() method over Lombok's generated string for clarity properties
     @Override
     public String toString() {
-        return "Processed page : pageProcessingStatus = " + this.pageProcessingStatus
-                + ", pageURL = " + this.pageURL
-                + ", parentURL = " + this.parentURL
-                + ", wordCount = " + this.wordCount;
+        return "Processed page : "
+                + "status = " + this.pageProcessingStatus + ", "
+                + "page = " + this.pageURL + ", "
+                + "parent = " + this.parentURL + ", "
+                + "words = " + this.wordCount;
     }
 
 }

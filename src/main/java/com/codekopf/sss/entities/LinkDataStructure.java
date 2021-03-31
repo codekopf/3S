@@ -34,8 +34,11 @@ public final class LinkDataStructure {
         return new HashCodeBuilder(17, 37).append(pageURL).toHashCode();
     }
 
+    // Custom toString() method over Lombok's generated string for clarity properties
     @Override
     public String toString() {
-        return "Unprocessed link structure : pageURL = " + this.pageURL + ", parentURL = " + this.parentURL;
+        return "Unprocessed link : "
+                + "page = " + this.pageURL + ", "
+                + "parent = " + this.parentURL;
     }
 }
