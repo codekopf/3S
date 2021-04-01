@@ -32,6 +32,7 @@
 * Possibility to set crawling page delay - protection against script being classified as bot and being blocked
   * normal - one second
   * random - bell curve of 1 minute range 
+* Store number of links in the page - all links - counting in-page anchors
 
 #### CODE ####
 * Check scrapping failure for IllegalArgumentException
