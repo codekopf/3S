@@ -28,6 +28,8 @@ import static com.codekopf.sss.entities.PageProcessingStatus.OK;
 @Service
 public class Engine {
 
+    private final int DEFAULT_PROCESSING_CACHE_PRINT = 25; // TODO: This should be argument
+
     // TODO Rework this to ProcessingLinkCache - new class - wrapper around these classes
     private final Set<LinkDataStructure> unprocessedLinks = new HashSet<>();
     private final Set<LinkDataStructure> processedLinks = new HashSet<>();
@@ -79,7 +81,7 @@ public class Engine {
             this.unprocessedLinks.remove(unprocessedLink);
             this.processedLinks.add(unprocessedLink);
 
-            if (this.processedPages.size() % 30 == 0) {
+            if (this.processedPages.size() % DEFAULT_PROCESSING_CACHE_PRINT == 0) {
                 printProcessingCache();
             }
 
