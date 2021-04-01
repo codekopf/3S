@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -33,6 +34,9 @@ public class Engine {
 
     private final Set<ProcessedPage> externalPages = new HashSet<>(); // TODO: I shall track this too
     private final Set<ProcessedPage> processedPages = new HashSet<>();
+
+    private final int ONE_SECOND_IN_MILISECONDS = 1000;
+    private final boolean RANDOM_HALF_MINUTE_SLEEP_DELAY = false;
 
     @Value("${domain}")
     private String domain;
@@ -80,7 +84,16 @@ public class Engine {
             }
 
             try {
-                Thread.sleep(1000);
+                if(RANDOM_HALF_MINUTE_SLEEP_DELAY) {
+                    val delay = ThreadLocalRandom.current().nextInt(1, 30 + 1) * 1000L;
+                    log.info("Delay: {}s", delay / ONE_SECOND_IN_MILISECONDS);
+                    Thread.sleep(delay);
+                } else {
+                    Thread.sleep(ONE_SECOND_IN_MILISECONDS);
+                }
+
+                // TODO: Option to select really long delay
+                //Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
