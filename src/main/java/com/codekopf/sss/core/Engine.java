@@ -1,14 +1,18 @@
 package com.codekopf.sss.core;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,6 +22,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.codekopf.sss.entities.LinkDataStructure;
+import com.codekopf.sss.entities.PageProcessingStatus;
 import com.codekopf.sss.entities.ProcessedPage;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
@@ -28,7 +33,12 @@ import static com.codekopf.sss.entities.PageProcessingStatus.OK;
 @Service
 public class Engine {
 
-    private final int DEFAULT_PROCESSING_CACHE_PRINT = 25; // TODO: This should be argument
+    private static final int DEFAULT_PROCESSING_CACHE_PRINT = 25; // TODO: This should be program entry argument
+    private static final String CSV_HEADER_STATUS = "status";
+    private static final String CSV_HEADER_PAGE_URL = "page URL";
+    private static final String CSV_HEADER_PARENT_URL = "parent URL";
+    private static final String CSV_HEADER_WORD_COUNT = "word count";
+    private static final String[] HEADERS = { CSV_HEADER_STATUS, CSV_HEADER_PAGE_URL, CSV_HEADER_PARENT_URL, CSV_HEADER_WORD_COUNT};
 
     // TODO Rework this to ProcessingLinkCache - new class - wrapper around these classes
     private final Set<LinkDataStructure> unprocessedLinks = new HashSet<>();
@@ -37,8 +47,10 @@ public class Engine {
     private final Set<ProcessedPage> externalPages = new HashSet<>(); // TODO: I shall track this too
     private final Set<ProcessedPage> processedPages = new HashSet<>();
 
-    private final int ONE_SECOND_IN_MILISECONDS = 1000;
-    private final boolean RANDOM_HALF_MINUTE_SLEEP_DELAY = false;
+    private static final int ONE_SECOND_IN_MILISECONDS = 1000;
+    private static final boolean RANDOM_HALF_MINUTE_SLEEP_DELAY = false;
+
+    private static final boolean startFromCSVFile = false; // TODO: This should be program entry argument
 
     @Value("${domain}")
     private String domain;
@@ -49,8 +61,11 @@ public class Engine {
     @EventListener(ApplicationReadyEvent.class)
     public void crawlSiteAfterStartup() {
 
+        if(startFromCSVFile) {
+            final String fileName = "DEFINE_CSV_FILE_NAME_HERE.csv";
+            loadFromCSV(fileName);
+        }
         val seed = new LinkDataStructure(this.websiteURL, this.websiteURL);
-
         this.unprocessedLinks.add(seed);
 
         while(!this.unprocessedLinks.isEmpty()) {
@@ -188,9 +203,8 @@ public class Engine {
     }
 
     public void createCSVFile() {
-        final String[] headers = { "status", "page URL", "parent URL", "word count"};
         try (final FileWriter fileWriter = new FileWriter(this.domain.replace(".", "_") + ".csv");
-             final CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(headers))) {
+             final CSVPrinter csvPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.withHeader(HEADERS))) {
             this.processedPages.forEach( page -> {
                 try {
                     csvPrinter.printRecord(page.getPageProcessingStatus(), page.getPageURL(), page.getParentURL(), page.getWordCount());
@@ -200,6 +214,21 @@ public class Engine {
             });
         } catch (IOException e) {
             log.error("Could not export link records to file!", e);
+        }
+    }
+
+    public void loadFromCSV(final String fileName) {
+        final File file = new File(fileName);
+        try (final CSVParser csvParser = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.DEFAULT.withFirstRecordAsHeader().withHeader(HEADERS))) {
+            for (CSVRecord csvRecord : csvParser) {
+                this.processedPages.add(new ProcessedPage(csvRecord.get(CSV_HEADER_PAGE_URL),
+                                                          csvRecord.get(CSV_HEADER_PARENT_URL),
+                                                          PageProcessingStatus.valueOf(csvRecord.get(CSV_HEADER_STATUS)),
+                                                          Integer.parseInt(csvRecord.get(CSV_HEADER_WORD_COUNT))));
+                this.processedLinks.add(new LinkDataStructure(csvRecord.get(CSV_HEADER_PARENT_URL), csvRecord.get(CSV_HEADER_PAGE_URL)));
+            }
+        } catch (IOException e) {
+            System.exit(-1);
         }
     }
 }
