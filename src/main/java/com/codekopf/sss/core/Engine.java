@@ -105,6 +105,7 @@ public class Engine {
 
         log.info("List of pages for " + this.domain + ":");
         this.processedPages.forEach(log::info);
+        System.exit(0);
     }
 
     private void processPageLinks(final String parentURL, final Document document) {
